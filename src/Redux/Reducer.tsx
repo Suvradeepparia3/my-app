@@ -12,7 +12,7 @@ import {
 } from "./Action";
 
 export const initialState = {
-  loading: false,
+  loading: true,
   token: undefined,
   error: undefined,
   userDetails: undefined,
@@ -86,11 +86,13 @@ export const orderReducer = (state = initialState, action: any) => {
     case USER_ORDERS_SUCCESS:
       return {
         ...state,
+        loading: false,
         orders: action.payload,
       };
     case USER_ORDERS_FAILURE:
       return {
         ...state,
+        loading: false,
         error: action.payload,
       };
     default:

@@ -74,7 +74,7 @@ export const orderFailure = (error: any) => {
   };
 };
 
-export const fetchOrders = (token: any) => {
+export const fetchOrders = (token: any, filter: string) => {
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ export const fetchOrders = (token: any) => {
   return function (dispatch: any) {
     dispatch(callForOrder());
     axios
-      .get("https://dev.uiplonline.com:3050/api/orders", {
+      .get(`https://dev.uiplonline.com:3050/api/orders?${filter}`, {
         headers: headers,
       })
       .then((res) => {
