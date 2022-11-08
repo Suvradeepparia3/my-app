@@ -170,8 +170,6 @@ export interface RootObject {
 }
 
 export interface OrderRes {
-  loading: boolean;
-  RootObject: RootObject;
   Customer: Customer;
   OrderDetails: OrderDetails;
   DeliveryBoy: DeliveryBoy;
@@ -179,7 +177,8 @@ export interface OrderRes {
   RestaurantUserMap: RestaurantUserMap;
   Restaurant: Restaurant;
   Item: Item;
-  Order: Order;
-  orders: Data;
+  orders: Order[];
+  total_orders: number;
+  limit: number;
   error: Error;
 }

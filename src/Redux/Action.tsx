@@ -78,7 +78,7 @@ export const orderFailure = (error: any) => {
   };
 };
 
-export const fetchOrders = (token: any, filter: string) => {
+export const fetchOrders = (token: any, filter?: string) => {
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,

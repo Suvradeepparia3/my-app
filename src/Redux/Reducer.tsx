@@ -1,3 +1,4 @@
+import { OrderRes } from "../Modals/orderResModal";
 import {
   CALL_FOR_LOGIN,
   LOGIN_SUCCESS,
@@ -11,15 +12,33 @@ import {
   USER_ORDERS_FAILURE,
 } from "./Action";
 
-export const initialState = {
+interface authInitialStateProps {
+  loading: boolean;
+  token: undefined | string;
+}
+
+interface userInitialState {
+  userDetails: any;
+}
+
+interface orderInitialState {
+  loading: boolean;
+  orders: OrderRes | undefined;
+}
+
+export const authInitialState: authInitialStateProps = {
   loading: true,
   token: undefined,
-  error: undefined,
+};
+export const userInitialState: userInitialState = {
   userDetails: undefined,
+};
+export const orderInitialState: orderInitialState = {
+  loading: true,
   orders: undefined,
 };
 
-export const authReducer = (state = initialState, action: any) => {
+export const authReducer = (state = authInitialState, action: any) => {
   switch (action.type) {
     case CALL_FOR_LOGIN:
       return {
@@ -59,7 +78,7 @@ export const authReducer = (state = initialState, action: any) => {
   }
 };
 
-export const userReducer = (state = initialState, action: any) => {
+export const userReducer = (state = userInitialState, action: any) => {
   switch (action.type) {
     case USER_DETAILS_SUCCESS:
       return {
@@ -69,14 +88,14 @@ export const userReducer = (state = initialState, action: any) => {
     case USER_DETAILS_FAILURE:
       return {
         ...state,
-        error: action.payload,
+        userDetails: undefined,
       };
     default:
       return state;
   }
 };
 
-export const orderReducer = (state = initialState, action: any) => {
+export const orderReducer = (state = orderInitialState, action: any) => {
   switch (action.type) {
     case USER_ORDERS_CALL:
       return {
@@ -93,7 +112,7 @@ export const orderReducer = (state = initialState, action: any) => {
       return {
         ...state,
         loading: false,
-        error: action.payload,
+        orders: undefined,
       };
     default:
       return state;

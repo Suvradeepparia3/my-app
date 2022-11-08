@@ -595,8 +595,8 @@ const Dashboard = (props: DashboardProps) => {
     setEndDate(dateString);
   };
 
-  const listOfOrders = props?.orders?.orders?.orders;
-
+  const listOfOrders = props?.orders?.orders;
+  console.log(props.orders);
   return (
     <div className="dasboardContent">
       <h1>Orders</h1>
@@ -691,8 +691,8 @@ const Dashboard = (props: DashboardProps) => {
         {" "}
         Search
       </Button>
-      {props.orders.loading === true ? <Spin /> : null}
-      {props.orders.loading === false &&
+      {props.loading === true ? <Spin /> : null}
+      {props.loading === false &&
         listOfOrders.map((order: any) => (
           <div
             style={{
@@ -739,7 +739,7 @@ const Dashboard = (props: DashboardProps) => {
       <Pagination
         onChange={onChange}
         defaultCurrent={1}
-        total={props?.orders?.orders?.total_orders}
+        total={props?.orders?.total_orders}
       />{" "}
       <br />
     </div>
@@ -747,17 +747,21 @@ const Dashboard = (props: DashboardProps) => {
 };
 
 interface DashboardProps {
+  loading: boolean;
   orders: OrderRes;
-  orderFetch: (token: string, filter?: string) => void;
+  orderFetch: (token: string, filter?: string | undefined) => void;
 }
 
 const mapStateToProps = (state: RootState) => {
-  return { orders: state.orders };
+  return {
+    orders: state.orders.orders,
+    loading: state.orders.loading,
+  };
 };
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    orderFetch: (token: any, filter: string) =>
+    orderFetch: (token: any, filter?: string) =>
       dispatch(fetchOrders(token, filter)),
   };
 };
