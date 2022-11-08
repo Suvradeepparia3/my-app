@@ -10,12 +10,16 @@ import {
   Dropdown,
   Menu,
   Space,
+  Button,
+  DatePicker,
+  DatePickerProps,
 } from "antd";
+import { OrderRes } from "../Modals/orderResModal";
+import { AppDispatch, RootState } from "../Redux/Store";
 
-function Dashboard(props: any) {
+const Dashboard = (props: DashboardProps) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const { Search } = Input;
 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -26,6 +30,9 @@ function Dashboard(props: any) {
   const [orderFromState, setOrderFromState] = useState("");
   const [orderFieldState, setOrderFieldState] = useState("");
   const [orderSortState, setOrderSortState] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [allFilterUrl, setAllFilterUrl] = useState("");
 
   useEffect(() => {
     const call = () => {
@@ -37,17 +44,91 @@ function Dashboard(props: any) {
   }, [token, navigate]);
 
   useEffect(() => {
-    props.orderFetch(token);
+    if (!!token) props.orderFetch(token);
   }, []);
+
+  useEffect(() => {
+    let searchUrl;
+    if (search !== "") {
+      searchUrl = `&search=${search}`;
+    } else {
+      searchUrl = "";
+    }
+    let kitchenNameUrl;
+    if (kitchenName !== "") {
+      kitchenNameUrl = `&kitchenName=${kitchenName}`;
+    } else {
+      kitchenNameUrl = "";
+    }
+    let orderStatusUrl;
+    if (selectedOrderStatus !== "") {
+      orderStatusUrl = `&orderStatus=${selectedOrderStatus}`;
+    } else {
+      orderStatusUrl = "";
+    }
+    let assignedStatusUrl;
+    if (selectedAssignedStatus !== "") {
+      assignedStatusUrl = `&assignedStatus=${selectedAssignedStatus}`;
+    } else {
+      assignedStatusUrl = "";
+    }
+    let orderFromStateUrl;
+    if (orderFromState !== "") {
+      orderFromStateUrl = `&orderSource=${orderFromState}`;
+    } else {
+      orderFromStateUrl = "";
+    }
+    let orderFieldStateUrl;
+    if (orderFieldState !== "") {
+      orderFieldStateUrl = `&field=${orderFieldState}`;
+    } else {
+      orderFieldStateUrl = "";
+    }
+    let orderSortStateUrl;
+    if (orderSortState !== "") {
+      orderSortStateUrl = `&sort=${orderSortState}`;
+    } else {
+      orderSortStateUrl = "";
+    }
+    let startDateUrl;
+    if (startDate !== "") {
+      startDateUrl = `&startDate=${startDate}`;
+    } else {
+      startDateUrl = "";
+    }
+    let endDateUrl;
+    if (endDate !== "") {
+      endDateUrl = `&endDate=${endDate}`;
+    } else {
+      endDateUrl = "";
+    }
+    setAllFilterUrl(
+      searchUrl +
+        kitchenNameUrl +
+        orderStatusUrl +
+        assignedStatusUrl +
+        orderFromStateUrl +
+        orderFieldStateUrl +
+        orderSortStateUrl +
+        startDateUrl +
+        endDateUrl
+    );
+    setPage(1);
+  }, [
+    search,
+    kitchenName,
+    selectedOrderStatus,
+    selectedAssignedStatus,
+    orderFromState,
+    orderFieldState,
+    orderSortState,
+    startDate,
+    endDate,
+  ]);
 
   // For Order
   const selectedOrder = (value: string) => {
     setSelectedOrderStatus(value);
-    let searchUrl;
-    if (value !== "") {
-      searchUrl = `orderStatus=${value}`;
-    }
-    props.orderFetch(token, searchUrl);
   };
   const orderStatus = (
     <Menu
@@ -164,11 +245,6 @@ function Dashboard(props: any) {
   // For Status
   const selectedStatus = (value: string) => {
     setSelectedAssignedStatus(value);
-    let searchUrl;
-    if (value !== "") {
-      searchUrl = `assignedStatus=${value}`;
-    }
-    props.orderFetch(token, searchUrl);
   };
   const assignedStatus = (
     <Menu
@@ -225,11 +301,6 @@ function Dashboard(props: any) {
   // For Order From
   const selectedOrderFrom = (value: string) => {
     setOrderFromState(value);
-    let searchUrl;
-    if (value !== "") {
-      searchUrl = `orderSource=${value}`;
-    }
-    props.orderFetch(token, searchUrl);
   };
   const orderFrom = (
     <Menu
@@ -346,11 +417,6 @@ function Dashboard(props: any) {
   // For order field
   const selectedOrderOfField = (value: string) => {
     setOrderFieldState(value);
-    let searchUrl;
-    if (value !== "") {
-      searchUrl = `field=${value}`;
-    }
-    props.orderFetch(token, searchUrl);
   };
   const orderOfField = (
     <Menu
@@ -452,11 +518,6 @@ function Dashboard(props: any) {
   // For Sort
   const selectedOrderSort = (value: string) => {
     setOrderSortState(value);
-    let searchUrl;
-    if (value !== "") {
-      searchUrl = `sort=${value}`;
-    }
-    props.orderFetch(token, searchUrl);
   };
   const orderSorting = (
     <Menu
@@ -514,39 +575,24 @@ function Dashboard(props: any) {
   const onChange = (selectedPage: number, selectedPageSize: number) => {
     setPage(selectedPage);
     setPageSize(selectedPageSize);
-    props.orderFetch(
-      token,
-      `search=${search}&kitchenName=${kitchenName}&page=${selectedPage}&limit=${selectedPageSize}`
-    );
-  };
-
-  // For Id search
-  const searchHandler = (value: string) => {
-    setSearch(value);
-    let searchUrl;
-    if (value !== "") {
-      searchUrl = `search=${value}`;
-    }
-    props.orderFetch(token, searchUrl);
-  };
-
-  // For kitchen search
-  const onKitchenNameSearch = (value: string) => {
-    setKichenName(value);
-    let searchUrl;
-    if (value !== "") {
-      searchUrl = `kitchenName=${value}`;
-    }
-    props.orderFetch(token, searchUrl);
+    !!token &&
+      props.orderFetch(
+        token,
+        `page=${selectedPage}&limit=${selectedPageSize}` + allFilterUrl
+      );
   };
 
   // All search
-  const onSearch = (value: string) => {
-    let searchUrl;
-    // if (search !== "") {
-    //   searchUrl = `search=${search}`;
-    // }
-    // props.orderFetch(token, searchUrl);
+  const onSearch = () => {
+    let urlWithPage = `page=${page}&limit=${pageSize}` + allFilterUrl;
+    !!token && props.orderFetch(token, urlWithPage);
+  };
+
+  const onStartDateChange: DatePickerProps["onChange"] = (date, dateString) => {
+    setStartDate(dateString);
+  };
+  const onEndDateChange: DatePickerProps["onChange"] = (date, dateString) => {
+    setEndDate(dateString);
   };
 
   const listOfOrders = props?.orders?.orders?.orders;
@@ -554,25 +600,25 @@ function Dashboard(props: any) {
   return (
     <div className="dasboardContent">
       <h1>Orders</h1>
-      <Search
+      <Input
         style={{
-          padding: "0% 10% 0% 10%",
+          width: "80%",
+          marginTop: "1%",
         }}
         placeholder="You can search the record with the following values: Bill Number, Assigned User Name"
-        allowClear
-        enterButton="Search"
-        size="large"
-        onSearch={searchHandler}
+        onChange={(ev: React.ChangeEvent<HTMLInputElement>): void =>
+          setSearch(ev.target.value)
+        }
       />
-      <Search
+      <Input
         style={{
-          padding: "2% 10% 0% 10%",
+          width: "80%",
+          marginTop: "1%",
         }}
         placeholder="You can filter the record with the kitchen names"
-        allowClear
-        enterButton="Search"
-        size="large"
-        onSearch={onKitchenNameSearch}
+        onChange={(ev: React.ChangeEvent<HTMLInputElement>): void =>
+          setKichenName(ev.target.value)
+        }
       />
       <div style={{ display: "flex", marginLeft: "10%" }}>
         {" "}
@@ -638,6 +684,13 @@ function Dashboard(props: any) {
           <p style={{ color: "black" }}>{orderSortState}</p>
         </div>
       </div>
+      <DatePicker onChange={onStartDateChange} />
+      <DatePicker onChange={onEndDateChange} />
+      <br /> <br />
+      <Button type="primary" onClick={onSearch}>
+        {" "}
+        Search
+      </Button>
       {props.orders.loading === true ? <Spin /> : null}
       {props.orders.loading === false &&
         listOfOrders.map((order: any) => (
@@ -691,13 +744,18 @@ function Dashboard(props: any) {
       <br />
     </div>
   );
+};
+
+interface DashboardProps {
+  orders: OrderRes;
+  orderFetch: (token: string, filter?: string) => void;
 }
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state: RootState) => {
   return { orders: state.orders };
 };
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     orderFetch: (token: any, filter: string) =>
       dispatch(fetchOrders(token, filter)),

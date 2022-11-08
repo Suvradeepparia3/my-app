@@ -1,4 +1,7 @@
 import axios from "axios";
+import { LoginModal } from "../Modals/loginModal";
+import { OrderRes } from "../Modals/orderResModal";
+import { AppDispatch } from "./Store";
 
 export const CALL_FOR_LOGIN = "CALL_FOR_LOGIN";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
@@ -35,7 +38,7 @@ export const loginFailure = (error: any) => {
   };
 };
 
-export const logInSubmit = (cred: any) => {
+export const logInSubmit = (cred: LoginModal) => {
   return function (dispatch: any) {
     dispatch(callForLogin());
     axios
@@ -54,13 +57,14 @@ export const logInSubmit = (cred: any) => {
   };
 };
 
+// Order
 export const callForOrder = () => {
   return {
     type: USER_ORDERS_CALL,
   };
 };
 
-export const orderSuccess = (orders: any) => {
+export const orderSuccess = (orders: OrderRes) => {
   return {
     type: USER_ORDERS_SUCCESS,
     payload: orders,
@@ -79,12 +83,17 @@ export const fetchOrders = (token: any, filter: string) => {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
   };
-  return function (dispatch: any) {
+  return function (dispatch: AppDispatch) {
     dispatch(callForOrder());
     axios
-      .get(`https://dev.uiplonline.com:3050/api/orders?${filter}`, {
-        headers: headers,
-      })
+      .get(
+        filter
+          ? `https://dev.uiplonline.com:3050/api/orders?${filter}`
+          : `https://dev.uiplonline.com:3050/api/orders`,
+        {
+          headers: headers,
+        }
+      )
       .then((res) => {
         dispatch(orderSuccess(res.data.data));
       })
