@@ -168,7 +168,19 @@ export interface RootObject {
   meta: Meta;
   message: string;
 }
-
+export interface OrderFilter {
+  search: string;
+  kitchenName: string;
+  selectedOrderStatus: string;
+  selectedAssignedStatus: string;
+  orderFromState: string;
+  orderFieldState: string;
+  orderSortState: string;
+  startDate: string;
+  endDate: string;
+  page: number;
+  pageSize: number;
+}
 export interface OrderRes {
   Customer: Customer;
   OrderDetails: OrderDetails;

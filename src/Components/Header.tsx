@@ -18,6 +18,8 @@ function Header(props: any) {
                   type="primary"
                   onClick={() => {
                     localStorage.removeItem("token");
+                    localStorage.removeItem("refreshToken");
+                    localStorage.removeItem("expiresIn");
                     props.logOutcall(token);
                   }}
                 >

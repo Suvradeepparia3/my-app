@@ -14,15 +14,15 @@ import {
   DatePicker,
   DatePickerProps,
 } from "antd";
-import { Order, OrderRes } from "../Modals/orderResModal";
+import { Order, OrderFilter, OrderRes } from "../Modals/orderResModal";
 import { AppDispatch, RootState } from "../Redux/Store";
 
 const Dashboard = (props: DashboardProps) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
   const [kitchenName, setKichenName] = useState("");
   const [selectedOrderStatus, setSelectedOrderStatus] = useState("");
@@ -32,7 +32,19 @@ const Dashboard = (props: DashboardProps) => {
   const [orderSortState, setOrderSortState] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [allFilterUrl, setAllFilterUrl] = useState("");
+  const [UrlObj, setUrlObj] = useState({
+    search: "",
+    kitchenName: "",
+    selectedOrderStatus: "",
+    selectedAssignedStatus: "",
+    orderFromState: "",
+    orderFieldState: "",
+    orderSortState: "",
+    startDate: "",
+    endDate: "",
+    page: 1,
+    pageSize: 10,
+  });
 
   useEffect(() => {
     const call = () => {
@@ -44,79 +56,34 @@ const Dashboard = (props: DashboardProps) => {
   }, [token, navigate]);
 
   useEffect(() => {
-    if (!!token) props.orderFetch(token);
-  }, []);
-
-  useEffect(() => {
-    let searchUrl;
-    if (search !== "") {
-      searchUrl = `&search=${search}`;
-    } else {
-      searchUrl = "";
-    }
-    let kitchenNameUrl;
-    if (kitchenName !== "") {
-      kitchenNameUrl = `&kitchenName=${kitchenName}`;
-    } else {
-      kitchenNameUrl = "";
-    }
-    let orderStatusUrl;
-    if (selectedOrderStatus !== "") {
-      orderStatusUrl = `&orderStatus=${selectedOrderStatus}`;
-    } else {
-      orderStatusUrl = "";
-    }
-    let assignedStatusUrl;
-    if (selectedAssignedStatus !== "") {
-      assignedStatusUrl = `&assignedStatus=${selectedAssignedStatus}`;
-    } else {
-      assignedStatusUrl = "";
-    }
-    let orderFromStateUrl;
-    if (orderFromState !== "") {
-      orderFromStateUrl = `&orderSource=${orderFromState}`;
-    } else {
-      orderFromStateUrl = "";
-    }
-    let orderFieldStateUrl;
-    if (orderFieldState !== "") {
-      orderFieldStateUrl = `&field=${orderFieldState}`;
-    } else {
-      orderFieldStateUrl = "";
-    }
-    let orderSortStateUrl;
-    if (orderSortState !== "") {
-      orderSortStateUrl = `&sort=${orderSortState}`;
-    } else {
-      orderSortStateUrl = "";
-    }
-    let startDateUrl;
-    if (startDate !== "") {
-      startDateUrl = `&startDate=${startDate}`;
-    } else {
-      startDateUrl = "";
-    }
-    let endDateUrl;
-    if (endDate !== "") {
-      endDateUrl = `&endDate=${endDate}`;
-    } else {
-      endDateUrl = "";
-    }
-    setAllFilterUrl(
-      searchUrl +
-        kitchenNameUrl +
-        orderStatusUrl +
-        assignedStatusUrl +
-        orderFromStateUrl +
-        orderFieldStateUrl +
-        orderSortStateUrl +
-        startDateUrl +
-        endDateUrl
-    );
-    setPage(1);
+    setUrlObj({
+      search: search,
+      kitchenName: kitchenName,
+      selectedOrderStatus: selectedOrderStatus,
+      selectedAssignedStatus: selectedAssignedStatus,
+      orderFromState: orderFromState,
+      orderFieldState: orderFieldState,
+      orderSortState: orderSortState,
+      startDate: startDate,
+      endDate: endDate,
+      page: page,
+      pageSize: pageSize,
+    });
+    !!token &&
+      props.orderFetch(token, {
+        search: search,
+        kitchenName: kitchenName,
+        selectedOrderStatus: selectedOrderStatus,
+        selectedAssignedStatus: selectedAssignedStatus,
+        orderFromState: orderFromState,
+        orderFieldState: orderFieldState,
+        orderSortState: orderSortState,
+        startDate: startDate,
+        endDate: endDate,
+        page: page,
+        pageSize: pageSize,
+      });
   }, [
-    search,
-    kitchenName,
     selectedOrderStatus,
     selectedAssignedStatus,
     orderFromState,
@@ -125,6 +92,26 @@ const Dashboard = (props: DashboardProps) => {
     startDate,
     endDate,
   ]);
+
+  useEffect(() => {
+    const timeOut = setTimeout(() => {
+      !!token &&
+        props.orderFetch(token, {
+          search: search,
+          kitchenName: kitchenName,
+          selectedOrderStatus: selectedOrderStatus,
+          selectedAssignedStatus: selectedAssignedStatus,
+          orderFromState: orderFromState,
+          orderFieldState: orderFieldState,
+          orderSortState: orderSortState,
+          startDate: startDate,
+          endDate: endDate,
+          page: page,
+          pageSize: pageSize,
+        });
+    }, 1000);
+    return () => clearTimeout(timeOut);
+  }, [search, kitchenName]);
 
   // For Order
   const selectedOrder = (value: string) => {
@@ -575,17 +562,26 @@ const Dashboard = (props: DashboardProps) => {
   const onChange = (selectedPage: number, selectedPageSize: number) => {
     setPage(selectedPage);
     setPageSize(selectedPageSize);
-    !!token &&
-      props.orderFetch(
-        token,
-        `page=${selectedPage}&limit=${selectedPageSize}` + allFilterUrl
-      );
+    console.log(UrlObj);
+    !!token && props.orderFetch(token, UrlObj);
   };
 
   // All search
   const onSearch = () => {
-    let urlWithPage = `page=${page}&limit=${pageSize}` + allFilterUrl;
-    !!token && props.orderFetch(token, urlWithPage);
+    !!token && props.orderFetch(token, UrlObj);
+  };
+
+  // All clear
+  const clear = () => {
+    setSearch("");
+    setKichenName("");
+    setSelectedOrderStatus("");
+    setSelectedAssignedStatus("");
+    setOrderFromState("");
+    setOrderFieldState("");
+    setOrderSortState("");
+    setStartDate("");
+    setEndDate("");
   };
 
   const onStartDateChange: DatePickerProps["onChange"] = (date, dateString) => {
@@ -605,6 +601,7 @@ const Dashboard = (props: DashboardProps) => {
           width: "80%",
           marginTop: "1%",
         }}
+        value={search}
         placeholder="You can search the record with the following values: Bill Number, Assigned User Name"
         onChange={(ev: React.ChangeEvent<HTMLInputElement>): void =>
           setSearch(ev.target.value)
@@ -615,6 +612,7 @@ const Dashboard = (props: DashboardProps) => {
           width: "80%",
           marginTop: "1%",
         }}
+        value={kitchenName}
         placeholder="You can filter the record with the kitchen names"
         onChange={(ev: React.ChangeEvent<HTMLInputElement>): void =>
           setKichenName(ev.target.value)
@@ -689,11 +687,15 @@ const Dashboard = (props: DashboardProps) => {
       <br /> <br />
       <Button type="primary" onClick={onSearch}>
         {" "}
-        Search
+        Submit
+      </Button>
+      <Button type="primary" onClick={clear}>
+        {" "}
+        Clear
       </Button>
       {props.loading === true ? <Spin /> : null}
       {props.loading === false &&
-        listOfOrders.map((order: Order) => (
+        listOfOrders?.map((order: Order) => (
           <div
             style={{
               padding: "4% 10% 0% 10%",
@@ -749,7 +751,7 @@ const Dashboard = (props: DashboardProps) => {
 interface DashboardProps {
   loading: boolean;
   orders: OrderRes;
-  orderFetch: (token: string, filter?: string | undefined) => void;
+  orderFetch: (token: string, UrlObj?: OrderFilter) => void;
 }
 
 const mapStateToProps = (state: RootState) => {
@@ -761,8 +763,8 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    orderFetch: (token: string | undefined, filter?: string) =>
-      dispatch(fetchOrders(token, filter)),
+    orderFetch: (token: string | undefined, UrlObj?: OrderFilter | undefined) =>
+      dispatch(fetchOrders(token, UrlObj)),
   };
 };
 
