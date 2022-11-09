@@ -5,14 +5,11 @@ import { Col, Row } from "antd";
 import { logInSubmit } from "../Redux/Action";
 import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
+import { AppDispatch, RootState } from "../Redux/Store";
 
-function Login(props: any) {
-  const onFinish = (values: any) => {
+function Login(props: LoginProps) {
+  const onFinish = (values: ValueProps) => {
     props.logIncall(values);
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
   };
 
   const token = localStorage.getItem("token");
@@ -25,7 +22,7 @@ function Login(props: any) {
     };
     call();
   }, [token, navigate]);
-
+  console.log(props.error);
   return (
     <div className="content">
       <h1>Log In</h1>
@@ -36,7 +33,6 @@ function Login(props: any) {
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
             onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
           >
             <Form.Item
@@ -68,7 +64,10 @@ function Login(props: any) {
               </Button>
 
               <div style={{ marginTop: "10px" }}>
-                {props.tokens?.loading ? <Spin /> : null}
+                {props.loading ? <Spin /> : null}
+              </div>
+              <div style={{ marginTop: "10px", color: "red" }}>
+                {!props.loading && props.error ? <p>{props.error}</p> : null}
               </div>
             </Form.Item>
           </Form>
@@ -78,14 +77,28 @@ function Login(props: any) {
   );
 }
 
-const mapStateToProps = (state: any) => {
+interface ValueProps {
+  password: string;
+  username: string;
+}
+
+interface LoginProps {
+  loading: boolean;
+  token: undefined | string;
+  error: undefined;
+  logIncall: (values: ValueProps) => void;
+}
+
+const mapStateToProps = (state: RootState) => {
   return {
-    tokens: state.tokens,
+    token: state.tokens.token,
+    loading: state.tokens.loading,
+    error: state.tokens.error,
   };
 };
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    logIncall: (values: any) => dispatch(logInSubmit(values)),
+    logIncall: (values: ValueProps) => dispatch(logInSubmit(values)),
   };
 };
 

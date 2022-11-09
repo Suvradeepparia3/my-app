@@ -4,12 +4,14 @@ import { connect } from "react-redux";
 import { userFetch } from "../Redux/Action";
 import { useNavigate } from "react-router-dom";
 import { Spin } from "antd";
+import { AppDispatch, RootState } from "../Redux/Store";
+import { UserDetails } from "../Modals/userDetailsModal";
 
-function Profile(props: any) {
+function Profile(props: ProfileProps) {
   const navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("token");
-    props.userFetch(token);
+    !!token && props.userFetch(token);
     const call = () => {
       if (token === null) {
         return <>{navigate("/login")}</>;
@@ -26,17 +28,17 @@ function Profile(props: any) {
         justifyContent: "center",
       }}
     >
-      {props.user.userDetails ? (
+      {props.user ? (
         <>
           <Descriptions title="User Info">
             <Descriptions.Item label="UserName">
-              {props.user.userDetails?.fullName}
+              {props.user?.fullName}
             </Descriptions.Item>
             <Descriptions.Item label="Telephone">
-              {props.user.userDetails?.mobile}
+              {props.user?.mobile}
             </Descriptions.Item>
             <Descriptions.Item label="Email">
-              {props.user.userDetails?.email}
+              {props.user?.email}
             </Descriptions.Item>
 
             <Descriptions.Item label="Address">
@@ -51,14 +53,19 @@ function Profile(props: any) {
   );
 }
 
-const mapStateToProps = (state: any) => {
+interface ProfileProps {
+  user: UserDetails;
+  userFetch: (token: string | undefined) => void;
+}
+
+const mapStateToProps = (state: RootState) => {
   return {
-    user: state.user,
+    user: state.user.userDetails,
   };
 };
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    userFetch: (token: any) => dispatch(userFetch(token)),
+    userFetch: (token: string | undefined) => dispatch(userFetch(token)),
   };
 };
 

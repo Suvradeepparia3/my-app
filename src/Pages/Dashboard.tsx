@@ -14,15 +14,15 @@ import {
   DatePicker,
   DatePickerProps,
 } from "antd";
-import { OrderRes } from "../Modals/orderResModal";
+import { Order, OrderRes } from "../Modals/orderResModal";
 import { AppDispatch, RootState } from "../Redux/Store";
 
 const Dashboard = (props: DashboardProps) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [search, setSearch] = useState("");
   const [kitchenName, setKichenName] = useState("");
   const [selectedOrderStatus, setSelectedOrderStatus] = useState("");
@@ -596,7 +596,7 @@ const Dashboard = (props: DashboardProps) => {
   };
 
   const listOfOrders = props?.orders?.orders;
-  console.log(props.orders);
+
   return (
     <div className="dasboardContent">
       <h1>Orders</h1>
@@ -693,7 +693,7 @@ const Dashboard = (props: DashboardProps) => {
       </Button>
       {props.loading === true ? <Spin /> : null}
       {props.loading === false &&
-        listOfOrders.map((order: any) => (
+        listOfOrders.map((order: Order) => (
           <div
             style={{
               padding: "4% 10% 0% 10%",
@@ -761,7 +761,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    orderFetch: (token: any, filter?: string) =>
+    orderFetch: (token: string | undefined, filter?: string) =>
       dispatch(fetchOrders(token, filter)),
   };
 };
