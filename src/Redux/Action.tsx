@@ -87,6 +87,7 @@ export const orderFailure = (error: string | undefined) => {
 
 export const fetchOrders = (UrlObj?: OrderFilter | undefined) => {
   return function (dispatch: AppDispatch) {
+    dispatch(callForOrder());
     orderDetails(UrlObj)
       .then((res) => {
         dispatch(orderSuccess(res.data.data));
