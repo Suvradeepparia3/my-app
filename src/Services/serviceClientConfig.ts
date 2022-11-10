@@ -12,33 +12,41 @@ export default class ServiceClient {
         const tokenExp = new Date(+expireDate * 1000);
         const refreshToken = localStorage.getItem("refreshToken");
         const today = new Date();
+
         if (!!tokenExp && !!token) {
-          if (tokenExp < today) {
+          if (tokenExp > today) {
             axios
               .get(
-                "https://dev.uiplonline.com:3050/api/auth/generate-token?" +
+                "https://dev.uiplonline.com:3050/api/auth/generate-token?refreshToken=" +
                   refreshToken
               )
               .then((response) => {
                 token = response.data.tokens.accessToken;
+                console.log("first", token);
                 if (!!token) {
                   setToken(token);
                 }
                 localStorage.setItem(
                   "refreshToken",
-                  response.data.refresh_token
+                  response.data.tokens.refreshToken
                 );
-                localStorage.setItem("expiresIn", response.data.expires_in);
+                localStorage.setItem(
+                  "expiresIn",
+                  response.data.tokens.expiresIn
+                );
               })
               .catch((err) => {
                 console.log(err);
               });
           }
+
+          let token2 = getToken();
           if (!!config.headers) {
-            config.headers["Authorization"] = "Bearer " + token;
+            console.log("2", token);
+            config.headers["Authorization"] = "Bearer " + token2;
           } else {
             config.headers = {};
-            config.headers["Authorization"] = "Bearer " + token;
+            config.headers["Authorization"] = "Bearer " + token2;
           }
         }
         return config;
