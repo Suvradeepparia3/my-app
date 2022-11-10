@@ -1,1 +1,1 @@
-export const axiosInstance = () => {};
+import axios from "axios";

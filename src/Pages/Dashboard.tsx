@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchOrders } from "../Redux/Action";
@@ -21,10 +21,10 @@ const Dashboard = (props: DashboardProps) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [search, setSearch] = useState("");
-  const [kitchenName, setKichenName] = useState("");
+  //const [page, setPage] = useState(1);
+  //const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState<string>("");
+  const [kitchenName, setKichenName] = useState<string>("");
   const [selectedOrderStatus, setSelectedOrderStatus] = useState("");
   const [selectedAssignedStatus, setSelectedAssignedStatus] = useState("");
   const [orderFromState, setOrderFromState] = useState("");
@@ -32,7 +32,8 @@ const Dashboard = (props: DashboardProps) => {
   const [orderSortState, setOrderSortState] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [UrlObj, setUrlObj] = useState({
+  const [initialRender, setInitialRender] = useState(true);
+  const [UrlObj, setUrlObj] = useState<OrderFilter>({
     search: "",
     kitchenName: "",
     selectedOrderStatus: "",
@@ -66,8 +67,8 @@ const Dashboard = (props: DashboardProps) => {
       orderSortState: orderSortState,
       startDate: startDate,
       endDate: endDate,
-      page: page,
-      pageSize: pageSize,
+      page: 10,
+      pageSize: 10,
     });
     !!token &&
       props.orderFetch(token, {
@@ -80,8 +81,8 @@ const Dashboard = (props: DashboardProps) => {
         orderSortState: orderSortState,
         startDate: startDate,
         endDate: endDate,
-        page: page,
-        pageSize: pageSize,
+        page: 1,
+        pageSize: 10,
       });
   }, [
     selectedOrderStatus,
@@ -94,23 +95,27 @@ const Dashboard = (props: DashboardProps) => {
   ]);
 
   useEffect(() => {
-    const timeOut = setTimeout(() => {
-      !!token &&
-        props.orderFetch(token, {
-          search: search,
-          kitchenName: kitchenName,
-          selectedOrderStatus: selectedOrderStatus,
-          selectedAssignedStatus: selectedAssignedStatus,
-          orderFromState: orderFromState,
-          orderFieldState: orderFieldState,
-          orderSortState: orderSortState,
-          startDate: startDate,
-          endDate: endDate,
-          page: page,
-          pageSize: pageSize,
-        });
-    }, 1000);
-    return () => clearTimeout(timeOut);
+    // this logic for prevent initial render from this useeffect
+    setInitialRender(false);
+    if (search !== "" || kitchenName !== "" || initialRender === false) {
+      const timeOut = setTimeout(() => {
+        !!token &&
+          props.orderFetch(token, {
+            search: search,
+            kitchenName: kitchenName,
+            selectedOrderStatus: selectedOrderStatus,
+            selectedAssignedStatus: selectedAssignedStatus,
+            orderFromState: orderFromState,
+            orderFieldState: orderFieldState,
+            orderSortState: orderSortState,
+            startDate: startDate,
+            endDate: endDate,
+            page: 1,
+            pageSize: 10,
+          });
+      }, 1000);
+      return () => clearTimeout(timeOut);
+    }
   }, [search, kitchenName]);
 
   // For Order
@@ -560,10 +565,22 @@ const Dashboard = (props: DashboardProps) => {
 
   // For Pagination
   const onChange = (selectedPage: number, selectedPageSize: number) => {
-    setPage(selectedPage);
-    setPageSize(selectedPageSize);
-    console.log(UrlObj);
-    !!token && props.orderFetch(token, UrlObj);
+    //setPage(selectedPage);
+    //setPageSize(selectedPageSize);
+    !!token &&
+      props.orderFetch(token, {
+        search: search,
+        kitchenName: kitchenName,
+        selectedOrderStatus: selectedOrderStatus,
+        selectedAssignedStatus: selectedAssignedStatus,
+        orderFromState: orderFromState,
+        orderFieldState: orderFieldState,
+        orderSortState: orderSortState,
+        startDate: startDate,
+        endDate: endDate,
+        page: selectedPage,
+        pageSize: selectedPageSize,
+      });
   };
 
   // All search
