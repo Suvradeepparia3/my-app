@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchOrders } from "../Redux/Action";
@@ -71,7 +71,7 @@ const Dashboard = (props: DashboardProps) => {
       pageSize: 10,
     });
     !!token &&
-      props.orderFetch(token, {
+      props.orderFetch({
         search: search,
         kitchenName: kitchenName,
         selectedOrderStatus: selectedOrderStatus,
@@ -100,7 +100,7 @@ const Dashboard = (props: DashboardProps) => {
     if (search !== "" || kitchenName !== "" || initialRender === false) {
       const timeOut = setTimeout(() => {
         !!token &&
-          props.orderFetch(token, {
+          props.orderFetch({
             search: search,
             kitchenName: kitchenName,
             selectedOrderStatus: selectedOrderStatus,
@@ -568,7 +568,7 @@ const Dashboard = (props: DashboardProps) => {
     //setPage(selectedPage);
     //setPageSize(selectedPageSize);
     !!token &&
-      props.orderFetch(token, {
+      props.orderFetch({
         search: search,
         kitchenName: kitchenName,
         selectedOrderStatus: selectedOrderStatus,
@@ -585,7 +585,7 @@ const Dashboard = (props: DashboardProps) => {
 
   // All search
   const onSearch = () => {
-    !!token && props.orderFetch(token, UrlObj);
+    !!token && props.orderFetch(UrlObj);
   };
 
   // All clear
@@ -768,7 +768,7 @@ const Dashboard = (props: DashboardProps) => {
 interface DashboardProps {
   loading: boolean;
   orders: OrderRes;
-  orderFetch: (token: string, UrlObj?: OrderFilter) => void;
+  orderFetch: (UrlObj?: OrderFilter) => void;
 }
 
 const mapStateToProps = (state: RootState) => {
@@ -780,8 +780,8 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    orderFetch: (token: string | undefined, UrlObj?: OrderFilter | undefined) =>
-      dispatch(fetchOrders(token, UrlObj)),
+    orderFetch: (UrlObj?: OrderFilter | undefined) =>
+      dispatch(fetchOrders(UrlObj)),
   };
 };
 

@@ -2,6 +2,8 @@ import axios from "axios";
 import { LoginModal } from "../Modals/loginModal";
 import { OrderFilter, OrderRes } from "../Modals/orderResModal";
 import { UserDetails } from "../Modals/userDetailsModal";
+import { orderDetails } from "../Services/orderService";
+import { userDetails } from "../Services/userService";
 import { AppDispatch } from "./Store";
 
 export enum ActionTypes {
@@ -54,7 +56,7 @@ export const logInSubmit = (cred: LoginModal) => {
         localStorage.setItem("refreshToken", res.data.data.refreshToken);
         localStorage.setItem("expiresIn", res.data.data.expiresIn);
         dispatch(loginSuccess(res.data.data));
-        dispatch(userFetch(res.data.data.accessToken));
+        dispatch(userFetch());
       })
       .catch((err) => {
         dispatch(loginFailure(err.response.data.error));
@@ -83,52 +85,9 @@ export const orderFailure = (error: string | undefined) => {
   };
 };
 
-export const fetchOrders = (
-  token: string | undefined,
-  UrlObj?: OrderFilter | undefined
-) => {
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-  let Url = `page=${UrlObj?.page}&pageSize=${UrlObj?.pageSize}`;
-  if (UrlObj?.search !== "") {
-    Url = Url + `&search=${UrlObj?.search}`;
-  }
-  if (UrlObj?.kitchenName !== "") {
-    Url = Url + `&kitchenName=${UrlObj?.kitchenName}`;
-  }
-  if (UrlObj?.selectedOrderStatus !== "") {
-    Url = Url + `&orderStatus=${UrlObj?.selectedOrderStatus}`;
-  }
-  if (UrlObj?.selectedAssignedStatus !== "") {
-    Url = Url + `&assignedStatus=${UrlObj?.selectedAssignedStatus}`;
-  }
-  if (UrlObj?.orderFromState !== "") {
-    Url = Url + `&orderSource=${UrlObj?.orderFromState}`;
-  }
-  if (UrlObj?.orderFieldState !== "") {
-    Url = Url + `&field=${UrlObj?.orderFieldState}`;
-  }
-
-  if (UrlObj?.orderSortState !== "") {
-    Url = Url + `&sort=${UrlObj?.orderSortState}`;
-  }
-
-  if (UrlObj?.startDate !== "") {
-    Url = Url + `&startDate=${UrlObj?.startDate}`;
-  }
-
-  if (UrlObj?.endDate !== "") {
-    Url = Url + `&endDate=${UrlObj?.endDate}`;
-  }
-
+export const fetchOrders = (UrlObj?: OrderFilter | undefined) => {
   return function (dispatch: AppDispatch) {
-    dispatch(callForOrder());
-    axios
-      .get(`https://dev.uiplonline.com:3050/api/orders?` + Url, {
-        headers: headers,
-      })
+    orderDetails(UrlObj)
       .then((res) => {
         dispatch(orderSuccess(res.data.data));
       })
@@ -153,16 +112,9 @@ export const userFetchFailure = (error: string | undefined) => {
   };
 };
 
-export const userFetch = (token: string | undefined) => {
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
+export const userFetch = () => {
   return function (dispatch: AppDispatch) {
-    axios
-      .get("https://dev.uiplonline.com:3050/api/users/token/user-info", {
-        headers: headers,
-      })
+    userDetails()
       .then((res) => {
         dispatch(userFetchSuccess(res.data.data));
       })

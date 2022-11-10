@@ -11,7 +11,7 @@ function Profile(props: ProfileProps) {
   const navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("token");
-    !!token && props.userFetch(token);
+    !!token && props.userFetch();
     const call = () => {
       if (token === null) {
         return <>{navigate("/login")}</>;
@@ -55,7 +55,7 @@ function Profile(props: ProfileProps) {
 
 interface ProfileProps {
   user: UserDetails;
-  userFetch: (token: string | undefined) => void;
+  userFetch: () => void;
 }
 
 const mapStateToProps = (state: RootState) => {
@@ -65,7 +65,7 @@ const mapStateToProps = (state: RootState) => {
 };
 const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
-    userFetch: (token: string | undefined) => dispatch(userFetch(token)),
+    userFetch: () => dispatch(userFetch()),
   };
 };
 
