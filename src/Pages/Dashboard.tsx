@@ -33,19 +33,6 @@ const Dashboard = (props: DashboardProps) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [initialRender, setInitialRender] = useState(true);
-  const [UrlObj, setUrlObj] = useState<OrderFilter>({
-    search: "",
-    kitchenName: "",
-    selectedOrderStatus: "",
-    selectedAssignedStatus: "",
-    orderFromState: "",
-    orderFieldState: "",
-    orderSortState: "",
-    startDate: "",
-    endDate: "",
-    page: 1,
-    pageSize: 10,
-  });
 
   useEffect(() => {
     const call = () => {
@@ -57,19 +44,6 @@ const Dashboard = (props: DashboardProps) => {
   }, [token, navigate]);
 
   useEffect(() => {
-    setUrlObj({
-      search: search,
-      kitchenName: kitchenName,
-      selectedOrderStatus: selectedOrderStatus,
-      selectedAssignedStatus: selectedAssignedStatus,
-      orderFromState: orderFromState,
-      orderFieldState: orderFieldState,
-      orderSortState: orderSortState,
-      startDate: startDate,
-      endDate: endDate,
-      page: 10,
-      pageSize: 10,
-    });
     !!token &&
       props.orderFetch({
         search: search,
@@ -585,7 +559,20 @@ const Dashboard = (props: DashboardProps) => {
 
   // All search
   const onSearch = () => {
-    !!token && props.orderFetch(UrlObj);
+    !!token &&
+      props.orderFetch({
+        search: search,
+        kitchenName: kitchenName,
+        selectedOrderStatus: selectedOrderStatus,
+        selectedAssignedStatus: selectedAssignedStatus,
+        orderFromState: orderFromState,
+        orderFieldState: orderFieldState,
+        orderSortState: orderSortState,
+        startDate: startDate,
+        endDate: endDate,
+        page: 1,
+        pageSize: 10,
+      });
   };
 
   // All clear
