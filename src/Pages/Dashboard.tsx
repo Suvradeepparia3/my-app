@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { fetchOrders } from "../Redux/Action";
@@ -32,7 +32,9 @@ const Dashboard = (props: DashboardProps) => {
   const [orderSortState, setOrderSortState] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [initialRender, setInitialRender] = useState(true);
+  //const [initialRender, setInitialRender] = useState(true);
+
+  const initialRender = useRef(true);
 
   useEffect(() => {
     const call = () => {
@@ -70,8 +72,12 @@ const Dashboard = (props: DashboardProps) => {
 
   useEffect(() => {
     // this logic for prevent initial render from this useeffect
-    setInitialRender(false);
-    if (search !== "" || kitchenName !== "" || initialRender === false) {
+    //setInitialRender(false);
+    if (
+      search !== "" ||
+      kitchenName !== "" ||
+      initialRender.current === false
+    ) {
       const timeOut = setTimeout(() => {
         !!token &&
           props.orderFetch({
@@ -89,6 +95,8 @@ const Dashboard = (props: DashboardProps) => {
           });
       }, 1000);
       return () => clearTimeout(timeOut);
+    } else {
+      initialRender.current = false;
     }
   }, [search, kitchenName]);
 

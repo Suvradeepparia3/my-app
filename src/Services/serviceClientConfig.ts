@@ -40,13 +40,12 @@ export default class ServiceClient {
               });
           }
 
-          let token2 = getToken();
           if (!!config.headers) {
             console.log("2", token);
-            config.headers["Authorization"] = "Bearer " + token2;
+            config.headers["Authorization"] = "Bearer " + token;
           } else {
             config.headers = {};
-            config.headers["Authorization"] = "Bearer " + token2;
+            config.headers["Authorization"] = "Bearer " + token;
           }
         }
         return config;
