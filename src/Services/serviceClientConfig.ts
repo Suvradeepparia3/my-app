@@ -6,7 +6,7 @@ export default class ServiceClient {
     this.client = axios.create(config);
 
     this.client.interceptors.request.use(
-      (config) => {
+      async (config) => {
         let token = getToken();
         let expireDate = localStorage.getItem("expiresIn")!;
         const tokenExp = new Date(+expireDate * 1000);
@@ -14,8 +14,8 @@ export default class ServiceClient {
         const today = new Date();
 
         if (!!tokenExp && !!token) {
-          if (tokenExp > today) {
-            axios
+          if (tokenExp < today) {
+            await axios
               .get(
                 "https://dev.uiplonline.com:3050/api/auth/generate-token?refreshToken=" +
                   refreshToken
