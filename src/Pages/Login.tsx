@@ -22,7 +22,7 @@ function Login(props: LoginProps) {
     };
     call();
   }, [token, navigate]);
-  console.log(props.error);
+
   return (
     <div className="content">
       <h1>Log In</h1>

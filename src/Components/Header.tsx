@@ -3,14 +3,15 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { logOutSubmit } from "../Redux/Action";
 import { Button } from "antd";
+import { AppDispatch, RootState } from "../Redux/Store";
 
-function Header(props: any) {
+function Header(props: HeaderProps) {
   const token = localStorage.getItem("token");
 
   return (
     <div>
       <nav className="header">
-        {props.tokens?.token || token ? (
+        {props.token || token ? (
           <div>
             <div className="header-item">
               <Link to="/">
@@ -20,7 +21,7 @@ function Header(props: any) {
                     localStorage.removeItem("token");
                     localStorage.removeItem("refreshToken");
                     localStorage.removeItem("expiresIn");
-                    props.logOutcall(token);
+                    props.logOutcall(token!);
                   }}
                 >
                   {" "}
@@ -47,13 +48,18 @@ function Header(props: any) {
   );
 }
 
-const mapStateToProps = (state: any) => {
+interface HeaderProps {
+  token: string | undefined;
+  logOutcall: (token: string | undefined) => void;
+}
+
+const mapStateToProps = (state: RootState) => {
   return {
-    tokens: state.tokens,
+    token: state.tokens.token,
   };
 };
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: AppDispatch) => {
   return {
     logOutcall: (token: any) => dispatch(logOutSubmit(token)),
   };

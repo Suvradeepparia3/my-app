@@ -21,8 +21,6 @@ const Dashboard = (props: DashboardProps) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
-  //const [page, setPage] = useState(1);
-  //const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState<string>("");
   const [kitchenName, setKichenName] = useState<string>("");
   const [selectedOrderStatus, setSelectedOrderStatus] = useState("");
@@ -32,7 +30,6 @@ const Dashboard = (props: DashboardProps) => {
   const [orderSortState, setOrderSortState] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  //const [initialRender, setInitialRender] = useState(true);
 
   const initialRender = useRef(true);
 
@@ -72,7 +69,6 @@ const Dashboard = (props: DashboardProps) => {
 
   useEffect(() => {
     // this logic for prevent initial render from this useeffect
-    //setInitialRender(false);
     if (
       search !== "" ||
       kitchenName !== "" ||
@@ -547,8 +543,6 @@ const Dashboard = (props: DashboardProps) => {
 
   // For Pagination
   const onChange = (selectedPage: number, selectedPageSize: number) => {
-    //setPage(selectedPage);
-    //setPageSize(selectedPageSize);
     !!token &&
       props.orderFetch({
         search: search,
@@ -715,7 +709,6 @@ const Dashboard = (props: DashboardProps) => {
             key={order.id}
           >
             <Descriptions
-              //title="Orders"
               bordered
               column={{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }}
             >

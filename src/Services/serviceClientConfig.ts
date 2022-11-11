@@ -22,7 +22,6 @@ export default class ServiceClient {
               )
               .then((response) => {
                 token = response.data.tokens.accessToken;
-                console.log("first", token);
                 if (!!token) {
                   setToken(token);
                 }
@@ -41,7 +40,6 @@ export default class ServiceClient {
           }
 
           if (!!config.headers) {
-            console.log("2", token);
             config.headers["Authorization"] = "Bearer " + token;
           } else {
             config.headers = {};

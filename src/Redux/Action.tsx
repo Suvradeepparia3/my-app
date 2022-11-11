@@ -56,7 +56,6 @@ export const logInSubmit = (cred: LoginModal) => {
         localStorage.setItem("refreshToken", res.data.data.refreshToken);
         localStorage.setItem("expiresIn", res.data.data.expiresIn);
         dispatch(loginSuccess(res.data.data));
-        //dispatch(userFetch());
       })
       .catch((err) => {
         dispatch(loginFailure(err.response.data.error));
