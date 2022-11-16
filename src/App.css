@@ -27,3 +27,30 @@ img {
   background-position: center;
   background-repeat: no-repeat;
 }
+.lebelName {
+  font-size: large;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 500;
+}
+.inputBox {
+  margin-left: 7%;
+  border: none;
+  width: 70%;
+  height: 40px;
+  border-radius: 25px;
+  padding-left: 5%;
+}
+.ml {
+  margin-left: 3%;
+}
+.input {
+  margin-bottom: 7%;
+}
+.button {
+  height: 40px;
+  width: 40%;
+  background-color: rgb(153, 137, 107);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
