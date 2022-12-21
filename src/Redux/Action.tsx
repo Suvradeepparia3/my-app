@@ -47,7 +47,8 @@ export const logInSubmit = (cred: LoginModal) => {
   return function (dispatch: AppDispatch) {
     dispatch(callForLogin());
     axios
-      .post("https://dev.uiplonline.com:3050/api/auth/login", {
+    // login api call
+      .post("", {
         email: cred.username,
         password: cred.password,
       })
@@ -144,8 +145,9 @@ export const logOutSubmit = (token: string | undefined) => {
   };
   return function (dispatch: any) {
     axios
+    // logout api call
       .post(
-        "https://dev.uiplonline.com:3050/api/auth/logout",
+        "",
         {},
         {
           headers: headers,

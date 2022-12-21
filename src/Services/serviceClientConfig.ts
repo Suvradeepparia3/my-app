@@ -17,7 +17,8 @@ export default class ServiceClient {
           if (tokenExp < today) {
             await axios
               .get(
-                "https://dev.uiplonline.com:3050/api/auth/generate-token?refreshToken=" +
+                //refresh token api
+                "" +
                   refreshToken
               )
               .then((response) => {
